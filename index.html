@@ -1,0 +1,9 @@
+﻿<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
+<script type="module">
+import { CSV } from "https://js.sabae.cc/CSV.js";
+
+const url = "https://code4fukui.github.io/week-kamiyama/week-kamiyama-opendata.csv";
+const data = await CSV.fetchJSON(url);
+console.log(data);
+
+</script>
