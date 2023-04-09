@@ -1,9 +1,53 @@
 ﻿<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
+<title>WEEK神山オープンデータのグラフ化アプリ</title>
+</head><body>
+<h1>WEEK神山オープンデータのグラフ化アプリ</h1>
+
+<canvas id="chart" width=300 height=200></canvas>
+<hr>
+DATA: <a href=https://github.com/code4fukui/week-kamiyama/>week-kamiyama</a> (<a href=https://week-kamiyama.jp/2023/02/22/open-data2301/>【新しい取り組み】宿のオープンデータ1月分 | week神山</a>、<a href=https://week-kamiyama.jp/2023/04/01/open-date2302/>宿のオープンデータ２月分 | week神山</a>)
+
+
 <script type="module">
 import { CSV } from "https://js.sabae.cc/CSV.js";
+import Chart from "https://code4sabae.github.io/kafumon/lib/Chart.mjs";
+import { ArrayUtil } from "https://js.sabae.cc/ArrayUtil.js";
 
 const url = "https://code4fukui.github.io/week-kamiyama/week-kamiyama-opendata.csv";
 const data = await CSV.fetchJSON(url);
 console.log(data);
 
+const labels = data.map(d => d.日付);
+//const types = ArrayUtil.toUnique(Object.keys(data).map(d => d.split("(")[0] ? d));
+const types = Object.keys(data[0]).filter(d => d != "日付" && !d.startsWith("年代"));
+console.log(types);
+
+const datasets = [];
+for (let i = 0; i < types.length; i++) {
+  const type = types[i];
+  const dd = [];
+  for (const date of labels) {
+    const d = data.find(d => d.日付 == date);
+    console.log(date, d);
+    dd.push(d[type].split("%")[0]);
+  }
+   const color = `hsl(${360 / types.length * i},80%,80%)`;
+  //const hue = .5;
+  //const color = `hsl(${hue},50%,${95 - 45 / labels.length * i}%)`;
+  datasets.push({ label: type, data: dd, borderColor: color, fill: false, lineTension: 0 });
+}
+
+const config = {
+  type: "line",
+  labels,
+  data: { labels: labels.map(l => l.substring(0, 4) + "/" + l.substring(5, 7)), datasets },
+};
+new Chart.Chart(chart, config);
+
 </script>
+
+<style>
+body {
+  text-align: center;
+}
+</style>
